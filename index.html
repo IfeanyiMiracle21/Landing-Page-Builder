@@ -1,74 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/framer-motion@11/dist/framer-motion.min.js"></script>
-    <title>Landing Page Builder</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Advanced Landing Page Builder</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/framer-motion@11/dist/framer-motion.min.js"></script>
 </head>
 <body>
-    <div class="builder-container">
-        <!-- Left Sidebar -->
-        <div class="sidebar">
-            <h2>📦 Components</h2>
-            <div class="section-library">
-                <div class="section-item" draggable="true" data-type="hero">
-                    <h3>🎯 Hero Section</h3>
-                    <p>Eye-catching header with CTA</p>
-                </div>
-                <div class="section-item" draggable="true" data-type="features">
-                    <h3>✨ Features Grid</h3>
-                    <p>Showcase key features</p>
-                </div>
-                <div class="section-item" draggable="true" data-type="stats">
-                    <h3>📊 Stats Counter</h3>
-                    <p>Display impressive numbers</p>
-                </div>
-                <div class="section-item" draggable="true" data-type="pricing">
-                    <h3>💰 Pricing Cards</h3>
-                    <p>Show your pricing plans</p>
-                </div>
-                <div class="section-item" draggable="true" data-type="cta">
-                    <h3>🚀 CTA Banner</h3>
-                    <p>Call-to-action section</p>
-                </div>
-                <div class="section-item" draggable="true" data-type="footer">
-                    <h3>📄 Footer</h3>
-                    <p>Bottom section with links</p>
-                </div>
-            </div>
-        </div>
+  <div class="builder-container">
+    <!-- Left Sidebar -->
+    <div class="sidebar">
+      <h2>Projects</h2>
+      <input type="text" id="projectName" placeholder="My Project Name" />
+      <button class="btn btn-primary" onclick="saveProject()">Save Project</button>
+      <div id="savedProjects"></div>
 
-        <!-- Canvas -->
-        <div class="canvas">
-            <div class="canvas-header">
-                <h1>🎨 Landing Page Builder</h1>
-                <div class="header-actions">
-                    <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
-                    <button class="btn btn-primary" onclick="exportHTML()">Export HTML</button>
-                </div>
-            </div>
-            <div class="preview-area">
-                <div class="drop-zone" id="dropZone">
-                    <div class="drop-zone-content">
-                        <h3>👈 Drag components here</h3>
-                        <p>Start building your landing page</p>
-                    </div>
-                </div>
-                <div id="sectionsContainer"></div>
-            </div>
-        </div>
+      <h2>Templates</h2>
+      <button class="template-btn" onclick="loadTemplate('saas')">SaaS Landing</button>
+      <button class="template-btn" onclick="loadTemplate('agency')">Agency</button>
+      <button class="template-btn" onclick="loadTemplate('portfolio')">Portfolio</button>
 
-        <!-- Right Panel -->
-        <div class="properties-panel">
-            <h2>⚙️ Properties</h2>
-            <div id="propertiesContent">
-                <p style="color: var(--text-secondary);">Select a section to edit its properties</p>
-            </div>
-        </div>
+      <h2>Components</h2>
+      <div class="section-library">
+        <div class="section-item" draggable="true" data-type="hero">Hero Section</div>
+        <div class="section-item" draggable="true" data-type="features">Features Grid</div>
+        <div class="section-item" draggable="true" data-type="testimonials">Testimonials</div>
+        <div class="section-item" draggable="true" data-type="team">Team</div>
+        <div class="section-item" draggable="true" data-type="blog">Blog Grid</div>
+        <div class="section-item" draggable="true" data-type="stats">Stats</div>
+        <div class="section-item" draggable="true" data-type="pricing">Pricing</div>
+        <div class="section-item" draggable="true" data-type="cta">CTA Banner</div>
+        <div class="section-item" draggable="true" data-type="footer">Footer</div>
+      </div>
     </div>
 
-    <script src="script.js"></script> 
+    <!-- Canvas -->
+    <div class="canvas" id="canvas">
+      <div class="canvas-header">
+        <h1>Landing Page Builder</h1>
+        <div class="header-actions">
+          <button class="btn btn-secondary" onclick="undo()">Undo</button>
+          <button class="btn btn-secondary" onclick="redo()">Redo</button>
+          <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
+          <button class="btn btn-primary" onclick="exportHTML()">Export HTML</button>
+        </div>
+      </div>
+      <div class="preview-area">
+        <div class="preview-wrapper" id="previewWrapper">
+          <div class="drop-zone" id="dropZone">
+            <div class="drop-zone-content">
+              <h3>Drag components here</h3>
+              <p>Start building your masterpiece</p>
+            </div>
+          </div>
+          <div id="sectionsContainer"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Properties Panel -->
+    <div class="properties-panel">
+      <h2>Properties</h2>
+      <div id="propertiesContent">
+        <p>Select a section to edit its properties</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mobile-toggle" onclick="toggleMobile()">Mobile</div>
+
+  <script src="script.js" defer></script>
 </body>
 </html>
