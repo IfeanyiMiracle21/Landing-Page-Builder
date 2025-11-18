@@ -12,24 +12,24 @@
     <!-- Left Sidebar -->
     <div class="sidebar">
       <h2>Projects</h2>
-      <input type="text" id="projectName" placeholder="My Project Name" />
+      <input type="text" id="projectName" placeholder="My Awesome Project" />
       <button class="btn btn-primary" onclick="saveProject()">Save Project</button>
       <div id="savedProjects"></div>
 
-      <h2>Templates</h2>
+      <h2 style="margin-top:2rem;">Templates</h2>
       <button class="template-btn" onclick="loadTemplate('saas')">SaaS Landing</button>
-      <button class="template-btn" onclick="loadTemplate('agency')">Agency</button>
+      <button class="template-btn" onclick="loadTemplate('agency')">Agency Site</button>
       <button class="template-btn" onclick="loadTemplate('portfolio')">Portfolio</button>
 
-      <h2>Components</h2>
+      <h2 style="margin-top:2rem;">Components</h2>
       <div class="section-library">
         <div class="section-item" draggable="true" data-type="hero">Hero Section</div>
         <div class="section-item" draggable="true" data-type="features">Features Grid</div>
         <div class="section-item" draggable="true" data-type="testimonials">Testimonials</div>
         <div class="section-item" draggable="true" data-type="team">Team</div>
         <div class="section-item" draggable="true" data-type="blog">Blog Grid</div>
-        <div class="section-item" draggable="true" data-type="stats">Stats</div>
-        <div class="section-item" draggable="true" data-type="pricing">Pricing</div>
+        <div class="section-item" draggable="true" data-type="stats">Stats Counter</div>
+        <div class="section-item" draggable="true" data-type="pricing">Pricing Cards</div>
         <div class="section-item" draggable="true" data-type="cta">CTA Banner</div>
         <div class="section-item" draggable="true" data-type="footer">Footer</div>
       </div>
@@ -63,7 +63,7 @@
     <div class="properties-panel">
       <h2>Properties</h2>
       <div id="propertiesContent">
-        <p>Select a section to edit its properties</p>
+        <p style="color:var(--text-secondary);">Select a section to edit</p>
       </div>
     </div>
   </div>
