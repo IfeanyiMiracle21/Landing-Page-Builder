@@ -209,30 +209,70 @@ function renderPropertiesPanel() {
     return;
   }
 
-  let html = `<h3>${selectedSection.type.charAt(0).toUpperCase() + selectedSection.type.slice(1)}</h3>`;
+  let html = `<h3>${selectedSection.type.charAt(0).toUpperCase() + selectedSection.type.slice(1)} Section</h3>`;
 
+  // Hero-specific controls
   if (selectedSection.type === 'hero') {
     html += `
-      <div class="prop-group"><label>Gradient Start</label><input type="color" value="${selectedSection.props.bgStart}" data-prop="bgStart"></div>
-      <div class="prop-group"><label>Gradient End</label><input type="color" value="${selectedSection.props.bgEnd}" data-prop="bgEnd"></div>
+      <div class="prop-group">
+        <label>Gradient Start</label>
+        <input type="color" value="${selectedSection.props.bgStart || '#667eea'}" data-prop="bgStart">
+      </div>
+      <div class="prop-group">
+        <label>Gradient End</label>
+        <input type="color" value="${selectedSection.props.bgEnd || '#764ba2'}" data-prop="bgEnd">
+      </div>
     `;
   }
 
-  html += `<div class="prop-group"><label>Background Color</label><input type="color" value="${selectedSection.props.bgColor || '#ffffff'}" data-prop="bgColor"></div>`;
+  // Universal controls for ALL sections
+  html += `
+    <div class="prop-group">
+      <label>Section Background</label>
+      <input type="color" value="${selectedSection.props.bgColor || '#ffffff'}" data-prop="bgColor">
+    </div>
+    <div class="prop-group">
+      <label>Text Color (all text in section)</label>
+      <input type="color" value="${selectedSection.props.textColor || '#000000'}" data-prop="textColor">
+    </div>
+    <div class="prop-group">
+      <label>Heading Color (h1, h2, h3)</label>
+      <input type="color" value="${selectedSection.props.headingColor || '#111111'}" data-prop="headingColor">
+    </div>
+  `;
 
   document.getElementById('propertiesContent').innerHTML = html;
 
-  document.querySelectorAll('#propertiesContent input').forEach(inp => {
-    inp.addEventListener('input', e => {
+  // Bind color inputs
+  document.querySelectorAll('#propertiesContent input[type="color"]').forEach(input => {
+    input.addEventListener('input', (e) => {
       const prop = e.target.dataset.prop;
       selectedSection.props[prop] = e.target.value;
 
-      const sectionEl = document.querySelector(`[data-id="${selectedSection.id}"] .section-content > div`);
-      if (selectedSection.type === 'hero') {
-        const hero = document.querySelector(`[data-id="${selectedSection.id}"] .hero-section`);
-        if (hero) hero.style.background = `linear-gradient(135deg, ${selectedSection.props.bgStart}, ${selectedSection.props.bgEnd})`;
-      } else if (sectionEl) {
+      const sectionEl = document.querySelector(`[data-id="${selectedSection.id}"] .section-content > div:first-child`) ||
+                        document.querySelector(`[data-id="${selectedSection.id}"] .section-content`);
+
+      if (!sectionEl) return;
+
+      // Apply styles
+      if (prop === 'bgColor') {
         sectionEl.style.background = e.target.value;
+      }
+      if (prop === 'textColor') {
+        sectionEl.style.color = e.target.value;
+      }
+      if (prop === 'headingColor') {
+        sectionEl.querySelectorAll('h1, h2, h3, h4').forEach(h => {
+          h.style.color = e.target.value;
+        });
+      }
+      if (prop === 'bgStart' || prop === 'bgEnd') {
+        if (selectedSection.type === 'hero') {
+          const hero = sectionEl.querySelector('.hero-section');
+          if (hero) {
+            hero.style.background = `linear-gradient(135deg, ${selectedSection.props.bgStart}, ${selectedSection.props.bgEnd})`;
+          }
+        }
       }
     });
   });
@@ -318,12 +358,27 @@ function exportHTML() {
   URL.revokeObjectURL(url);
 }
 
-// === Init ===
-document.addEventListener('DOMContentLoaded', () => {
-  setupDragAndDrop();
-  loadSavedProjectsList();
-  saveToHistory();
-  renderSections();
+// Smart text selection: click any text → select section + highlight text color
+document.addEventListener('click', (e) => {
+  const textEl = e.target.closest('h1, h2, h3, h4, p, a, span, div[contenteditable]');
+  if (!textEl) return;
+
+  const sectionEl = textEl.closest('.placed-section');
+  if (!sectionEl) return;
+
+  const id = parseInt(sectionEl.dataset.id);
+  selectSection(id);
+
+  // Auto-scroll properties panel to text color
+  setTimeout(() => {
+    const textColorInput = document.querySelector('input[data-prop="textColor"]');
+    if (textColorInput) {
+      textColorInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      textColorInput.style.transform = 'scale(1.1)';
+      setTimeout(() => textColorInput.style.transform = '', 300);
+    }
+  }, 100);
+});
 
   // Inline editing
   document.addEventListener('dblclick', e => {
