@@ -7,51 +7,82 @@
 <title>Landing Page Builder - Fixed & Enhanced</title>
 </head>
 <body>
-  <div class="sidebar">
-  <h2 style="color:var(--accent); margin-bottom:1rem;">Projects</h2>
-  <input type="text" id="projectName" placeholder="My Project Name">
-  <button class="btn btn-primary" id="saveBtn">Save Project</button>
-  <div id="savedProjects" style="margin-top:1rem;"></div>
-
-  <h2 style="color:var(--accent); margin:2rem 0 1rem;">Templates</h2>
-  <button class="btn btn-secondary" data-template="saas" style="width:100%; text-align:left; margin-bottom:0.5rem;">SaaS Landing</button>
-  <button class="btn btn-secondary" data-template="agency" style="width:100%; text-align:left; margin-bottom:0.5rem;">Agency Site</button>
-
-  <h2 style="color:var(--accent); margin:2rem 0 1rem;">Components</h2>
-  <div class="section-item" draggable="true" data-type="hero">Hero Section</div>
-  <div class="section-item" draggable="true" data-type="features">Features</div>
-  <div class="section-item" draggable="true" data-type="testimonials">Testimonials</div>
-  <div class="section-item" draggable="true" data-type="stats">Stats</div>
-  <div class="section-item" draggable="true" data-type="pricing">Pricing</div>
-  <div class="section-item" draggable="true" data-type="cta">Call to Action</div>
-  <div class="section-item" draggable="true" data-type="footer">Footer</div>
-</div>
-
-<div class="canvas" id="canvas">
-  <div class="canvas-header">
-    <h1>Landing Page Builder</h1>
-    <div class="header-actions">
-      <button class="btn btn-secondary" id="undoBtn">Undo</button>
-      <button class="btn btn-secondary" id="redoBtn">Redo</button>
-      <button class="btn btn-secondary" id="clearBtn">Clear All</button>
-      <button class="btn btn-primary" id="exportBtn">Export HTML</button>
+  <div class="builder-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2>📁 Projects</h2>
+      <input type="text" id="projectName" placeholder="My Project" />
+      <button class="btn btn-primary" id="saveBtn">Save Project</button>
+      
+      <h2 style="margin-top:2rem;">🎨 Templates</h2>
+      <button class="template-btn" data-template="startup">
+        <strong>💼 Startup SaaS</strong>
+        <small>Modern gradient hero, features, pricing</small>
+      </button>
+      <button class="template-btn" data-template="portfolio">
+        <strong>👨‍💻 Developer Portfolio</strong>
+        <small>Dark theme, project showcase, skills</small>
+      </button>
+      <button class="template-btn" data-template="agency">
+        <strong>🎯 Creative Agency</strong>
+        <small>Bold colors, team section, case studies</small>
+      </button>
+      <button class="template-btn" data-template="ecommerce">
+        <strong>🛍️ E-commerce Store</strong>
+        <small>Product grid, vibrant CTAs, testimonials</small>
+      </button>
+      <button class="template-btn" data-template="app">
+        <strong>📱 App Landing</strong>
+        <small>Mobile-first, feature showcase, download buttons</small>
+      </button>
+      <button class="template-btn" data-template="blog">
+        <strong>✍️ Blog/Magazine</strong>
+        <small>Editorial design, article grid, newsletter</small>
+      </button>
+      
+      <h2 style="margin-top:2rem;">📦 Components</h2>
+      <div class="section-library">
+        <div class="section-item" draggable="true" data-type="hero">🎯 Hero Section</div>
+        <div class="section-item" draggable="true" data-type="features">✨ Features Grid</div>
+        <div class="section-item" draggable="true" data-type="stats">📊 Stats Counter</div>
+        <div class="section-item" draggable="true" data-type="pricing">💰 Pricing Table</div>
+        <div class="section-item" draggable="true" data-type="cta">🚀 Call to Action</div>
+        <div class="section-item" draggable="true" data-type="footer">📄 Footer</div>
+      </div>
+    </div>
+    
+    <!-- Canvas -->
+    <div class="canvas">
+      <div class="canvas-header">
+        <h1>🎨 Advanced Landing Page Builder</h1>
+        <div class="header-actions">
+          <button class="btn btn-secondary" id="clearBtn">Clear All</button>
+          <button class="btn btn-primary" id="exportBtn">💾 Export HTML</button>
+        </div>
+      </div>
+      <div class="preview-area">
+        <div class="drop-zone" id="dropZone">
+          <h3>👈 Drag components to start</h3>
+          <p>Or load a template from the sidebar</p>
+        </div>
+        <div id="sectionsContainer"></div>
+      </div>
+    </div>
+    
+    <!-- Properties Panel -->
+    <div class="properties-panel">
+      <h2>⚙️ Properties</h2>
+      
+      <div class="mode-toggle">
+        <button class="active" id="visualMode">🎨 Visual</button>
+        <button id="codeMode">💻 Code</button>
+      </div>
+      
+      <div id="propertiesContent">
+        <p style="color:#94a3b8;">Select a section to edit</p>
+      </div>
     </div>
   </div>
-  <div class="preview-wrapper" id="previewWrapper">
-    <div class="drop-zone" id="dropZone">Drag components here to start</div>
-    <div id="sectionsContainer"></div>
-  </div>
-</div>
-
-<div class="properties-panel">
-  <h2 style="color:var(--accent);">Properties</h2>
-  <div id="propertiesContent">
-    <p style="color:var(--text-secondary);">Click a section to edit</p>
-  </div>
-</div>
-
-<div class="mobile-toggle" id="mobileToggle">Mobile Preview</div>
-
   <script src="script.js"></script>
 </body>
 </html>
