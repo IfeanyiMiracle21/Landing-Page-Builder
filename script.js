@@ -1,401 +1,230 @@
+// === State ===
 let sections = [];
-let selectedSection = null;
+let selectedId = null;
 let history = [];
-let historyIndex = -1;
-let isMobilePreview = false;
-let draggedElement = null;
+let historyStep = 0;
 
-const sectionTemplates = {
-  hero: {
-    html: `<div class="hero-section">
-      <h1 contenteditable="true">Build Something Amazing</h1>
-      <p contenteditable="true">Create stunning landing pages in minutes with drag & drop</p>
-      <a href="#" class="hero-cta" contenteditable="true">Get Started</a>
-    </div>`,
-    props: { bgStart: "#667eea", bgEnd: "#764ba2" }
-  },
-  features: {
-    html: `<div class="features-section fade-up">
-      <div class="features-grid">
-        <div class="feature-card"><div class="feature-icon">Fast</div><h3>Lightning Fast</h3><p contenteditable="true">Build pages in minutes</p></div>
-        <div class="feature-card"><div class="feature-icon">Design</div><h3>Beautiful Design</h3><p contenteditable="true">Professional templates</p></div>
-        <div class="feature-card"><div class="feature-icon">Mobile</div><h3>Fully Responsive</h3><p contenteditable="true">Looks great everywhere</p></div>
-      </div>
-    </div>`,
-    props: {}
-  },
-  testimonials: {
-    html: `<div style="padding:4rem 2rem;background:#f8fafc;text-align:center;" class="fade-up">
-      <h2 contenteditable="true">What People Say</h2>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;max-width:1200px;margin:2rem auto;">
-        <div style="background:white;padding:2rem;border-radius:12px;box-shadow:0 5px 20px rgba(0,0,0,0.1);">
-          <p contenteditable="true">"This changed everything!"</p><strong>- Sarah K.</strong>
-        </div>
-        <div style="background:white;padding:2rem;border-radius:12px;box-shadow:0 5px 20px rgba(0,0,0,0.1);">
-          <p contenteditable="true">"Best builder I've used"</p><strong>- Mike Chen</strong>
-        </div>
-        <div style="background:white;padding:2rem;border-radius:12px;box-shadow:0 5px 20px rgba(0,0,0,0.1);">
-          <p contenteditable="true">"So easy and powerful"</p><strong>- Lisa Wong</strong>
-        </div>
-      </div>
-    </div>`,
-    props: {}
-  },
-  team: {
-    html: `<div style="padding:6rem 2rem;background:white;text-align:center;" class="fade-up">
-      <h2 contenteditable="true">Our Amazing Team</h2>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:3rem;margin-top:3rem;">
-        <div><div style="width:150px;height:150px;background:#e2e8f0;border-radius:50%;margin:auto;"></div><h3 contenteditable="true">Alex</h3><p contenteditable="true">CEO</p></div>
-        <div><div style="width:150px;height:150px;background:#e2e8f0;border-radius:50%;margin:auto;"></div><h3 contenteditable="true">Sam</h3><p contenteditable="true">Designer</p></div>
-        <div><div style="width:150px;height:150px;background:#e2e8f0;border-radius:50%;margin:auto;"></div><h3 contenteditable="true">Jordan</h3><p contenteditable="true">Developer</p></div>
-      </div>
-    </div>`,
-    props: {}
-  },
-  blog: {
-    html: `<div style="padding:4rem 2rem;background:#f1f5f9;" class="fade-up">
-      <h2 contenteditable="true" style="text-align:center;margin-bottom:3rem;">Latest Posts</h2>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;max-width:1200px;margin:auto;">
-        <div style="background:white;border-radius:12px;overflow:hidden;">
-          <div style="height:200px;background:#cbd5e1;"></div>
-          <div style="padding:1.5rem;"><h3 contenteditable="true">How We Built This</h3><p contenteditable="true">The story behind our new product...</p></div>
-        </div>
-        <div style="background:white;border-radius:12px;overflow:hidden;">
-          <div style="height:200px;background:#cbd5e1;"></div>
-          <div style="padding:1.5rem;"><h3 contenteditable="true">Design Tips 2025</h3><p contenteditable="true">Latest trends you need to know...</p></div>
-        </div>
-        <div style="background:white;border-radius:12px;overflow:hidden;">
-          <div style="height:200px;background:#cbd5e1;"></div>
-          <div style="padding:1.5rem;"><h3 contenteditable="true">Launch Checklist</h3><p contenteditable="true">Don't forget these before going live...</p></div>
-        </div>
-      </div>
-    </div>`,
-    props: {}
-  },
-  stats: {
-    html: `<div class="stats-section fade-up">
-      <div class="stats-grid">
-        <div class="stat-item"><h2>10K+</h2><p>Active Users</p></div>
-        <div class="stat-item"><h2>50K+</h2><p>Pages Created</p></div>
-        <div class="stat-item"><h2>99%</h2><p>Satisfaction Rate</p></div>
-      </div>
-    </div>`,
-    props: {}
-  },
-  pricing: {
-    html: `<div class="pricing-section fade-up">
-      <div class="pricing-grid">
-        <div class="pricing-card"><h3>Starter</h3><div class="price">$9</div><p contenteditable="true">Perfect for individuals</p></div>
-        <div class="pricing-card"><h3>Pro</h3><div class="price">$29</div><p contenteditable="true">For growing teams</p></div>
-        <div class="pricing-card"><h3>Enterprise</h3><div class="price">$99</div><p contenteditable="true">Full power & support</p></div>
-      </div>
-    </div>`,
-    props: {}
-  },
-  cta: {
-    html: `<div class="cta-section fade-up">
-      <h2 contenteditable="true">Ready to Get Started?</h2>
-      <p contenteditable="true">Join thousands of happy users</p>
-      <a href="#" class="hero-cta" contenteditable="true">Start Building Now</a>
-    </div>`,
-    props: {}
-  },
-  footer: {
-    html: `<div class="footer-section">
-      <p>&copy; 2025 Your Company. Made with Landing Page Builder</p>
-    </div>`,
-    props: {}
-  }
+// === Templates ===
+const templates = {
+  hero: { html: `<div class="hero-section" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:6rem 2rem;text-align:center;">
+    <h1 contenteditable="true">Build Something Amazing</h1>
+    <p contenteditable="true">Create stunning landing pages in minutes</p>
+    <a href="#" class="hero-cta" contenteditable="true">Get Started</a>
+  </div>`, props: {bgStart:"#667eea", bgEnd:"#764ba2", textColor:"#ffffff", headingColor:"#ffffff"} },
+
+  features: { html: `<div class="features-section fade-up" style="padding:4rem 2rem;background:#f8fafc;">
+    <div class="features-grid">
+      <div class="feature-card"><div class="feature-icon">Fast</div><h3>Fast</h3><p contenteditable="true">Lightning fast</p></div>
+      <div class="feature-card"><div class="feature-icon">Design</div><h3>Design</h3><p contenteditable="true">Beautiful</p></div>
+      <div class="feature-card"><div class="feature-icon">Mobile</div><h3>Mobile</h3><p contenteditable="true">Responsive</p></div>
+    </div>
+  </div>`, props: {} },
+
+  testimonials: { html: `<div class="fade-up" style="padding:4rem 2rem;background:#f8fafc;text-align:center;">
+    <h2 contenteditable="true">What People Say</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;max-width:1200px;margin:2rem auto;">
+      <div style="background:white;padding:2rem;border-radius:12px;"><p contenteditable="true">"Best tool!"</p><strong>- Alex</strong></div>
+      <div style="background:white;padding:2rem;border-radius:12px;"><p contenteditable="true">"Love it!"</p><strong>- Sam</strong></div>
+      <div style="background:white;padding:2rem;border-radius:12px;"><p contenteditable="true">"Game changer"</p><strong>- Jordan</strong></div>
+    </div>
+  </div>`, props: {} },
+
+  team: { html: `<div class="fade-up" style="padding:6rem 2rem;background:white;text-align:center;">
+    <h2 contenteditable="true">Our Team</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:3rem;margin-top:3rem;">
+      <div><div style="width:150px;height:150px;background:#ddd;border-radius:50%;margin:auto;"></div><h3 contenteditable="true">Alex</h3><p contenteditable="true">CEO</p></div>
+      <div><div style="width:150px;height:150px;background:#ddd;border-radius:50%;margin:auto;"></div><h3 contenteditable="true">Sam</h3><p contenteditable="true">Designer</p409></div>
+      <div><div style="width:150px;height:150px;background:#ddd;border-radius:50%;margin:auto;"></div><h3 contenteditable="true">Jordan</h3><p contenteditable="true">Developer</p></div>
+    </div>
+  </div>`, props: {} },
+
+  blog: { html: `<div class="fade-up" style="padding:4rem 2rem;background:#f1f5f9;">
+    <h2 contenteditable="true" style="text-align:center;">Blog</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;max-width:1200px;margin:auto;">
+      <div style="background:white;border-radius:12px;overflow:hidden;"><div style="height:200px;background:#ccc;"></div><div style="padding:1.5rem;"><h3 contenteditable="true">Post 1</h3><p contenteditable="true">Content...</p></div></div>
+      <div style="background:white;border-radius:12px;overflow:hidden;"><div style="height:200px;background:#ccc;"></div><div style="padding:1.5rem;"><h3 contenteditable="true">Post 2</h3><p contenteditable="true">Content...</p></div></div>
+      <div style="background:white;border-radius:12px;overflow:hidden;"><div style="height:200px;background:#ccc;"></div><div style="padding:1.5rem;"><h3 contenteditable="true">Post 3</h3><p contenteditable="true">Content...</p></div></div>
+    </div>
+  </div>`, props: {} },
+
+  stats: { html: `<div class="stats-section fade-up"><div class="stats-grid">
+    <div class="stat-item"><h2>10K+</h2><p>Users</p></div>
+    <div class="stat-item"><h2>50K+</h2><p>Pages</p></div>
+    <div class="stat-item"><h2>99%</h2><p>Happy</p></div>
+  </div></div>`, props: {} },
+
+  pricing: { html: `<div class="pricing-section fade-up"><div class="pricing-grid">
+    <div class="pricing-card"><h3>Starter</h3><div class="price">$9</div><p contenteditable="true">Great start</p></div>
+    <div class="pricing-card"><h3>Pro</h3><div class="price">$29</div><p contenteditable="true">Most popular</p></div>
+    <div class="pricing-card"><h3>Enterprise</h3><div class="price">$99</div><p contenteditable="true">Full power</p></div>
+  </div></div>`, props: {} },
+
+  cta: { html: `<div class="cta-section fade-up">
+    <h2 contenteditable="true">Ready to Start?</h2>
+    <a href="#" class="hero-cta" contenteditable="true">Yes!</a>
+  </div>`, props: {} },
+
+  footer: { html: `<div class="footer-section"><p>&copy; 2025 My Company</p></div>`, props: {} }
 };
 
-const templates = {
+const presets = {
   saas: ["hero","features","testimonials","pricing","cta","footer"],
   agency: ["hero","team","features","blog","cta","footer"],
   portfolio: ["hero","features","team","testimonials","cta","footer"]
 };
 
-// === Drag & Drop Setup ===
-function setupDragAndDrop() {
-  document.querySelectorAll('.section-item').forEach(item => {
-    item.addEventListener('dragstart', e => {
-      e.dataTransfer.setData('type', e.target.dataset.type);
-      e.dataTransfer.effectAllowed = 'copy';
-    });
-  });
-
-  const dropZone = document.getElementById('dropZone');
-  const container = document.getElementById('sectionsContainer');
-
-  [dropZone, container].forEach(zone => {
-    zone.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; dropZone.classList.add('drag-over'); });
-    zone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-    zone.addEventListener('drop', e => {
-      e.preventDefault();
-      dropZone.classList.remove('drag-over');
-      const type = e.dataTransfer.getData('type');
-      if (type) addSection(type);
-    });
-  });
-}
-
-// === Core Functions ===
-function addSection(type) {
-  const template = sectionTemplates[type];
-  const section = {
-    id: Date.now() + Math.random(),
-    type,
-    html: template.html,
-    props: { ...template.props }
-  };
-  sections.push(section);
-  saveToHistory();
-  renderSections();
-}
-
-function renderSections() {
-  const container = document.getElementById('sectionsContainer');
-  const dropZone = document.getElementById('dropZone');
-
+// === Render ===
+function render() {
+  const container = document.getElementById("sectionsContainer");
   if (sections.length === 0) {
-    container.innerHTML = '';
-    dropZone.style.display = 'flex';
+    container.innerHTML = "";
+    document.getElementById("dropZone").style.display = "flex";
     return;
   }
-  dropZone.style.display = 'none';
+  document.getElementById("dropZone").style.display = "none";
 
-  container.innerHTML = sections.map(sec => `
-    <div class="placed-section" data-id="${sec.id}" draggable="true" onclick="selectSection(${sec.id})">
+  container.innerHTML = sections.map((sec, i) => `
+    <div class="placed-section ${selectedId === sec.id ? 'selected' : ''}" data-id="${sec.id}" onclick="select(${sec.id})">
       <div class="section-controls">
-        <button class="control-btn" onclick="event.stopPropagation(); duplicateSection(${sec.id})">Copy</button>
-        <button class="control-btn" onclick="event.stopPropagation(); moveUp(${sec.id})">Up</button>
-        <button class="control-btn" onclick="event.stopPropagation(); moveDown(${sec.id})">Down</button>
-        <button class="control-btn" onclick="event.stopPropagation(); deleteSection(${sec.id})">Delete</button>
+        <button onclick="event.stopPropagation(); duplicate(${i})">Copy</button>
+        <button onclick="event.stopPropagation(); up(${i})">Up</button>
+        <button onclick="event.stopPropagation(); down(${i})">Down</button>
+        <button onclick="event.stopPropagation(); remove(${i})">Delete</button>
       </div>
       <div class="section-content">${sec.html}</div>
     </div>
-  `).join('');
+  `).join("");
 
-  // Reordering drag
-  container.querySelectorAll('.placed-section').forEach(el => {
-    el.addEventListener('dragstart', e => { draggedElement = el; el.classList.add('dragging'); });
-    el.addEventListener('dragover', e => e.preventDefault());
-    el.addEventListener('drop', e => {
-      if (draggedElement && draggedElement !== el) {
-        const from = sections.findIndex(s => s.id == draggedElement.dataset.id);
-        const to = sections.findIndex(s => s.id == el.dataset.id);
-        sections.splice(to, 0, sections.splice(from, 1)[0]);
-        saveToHistory();
-        renderSections();
-      }
-    });
-    el.addEventListener('dragend', () => el.classList.remove('dragging'));
-  });
-
-  // Scroll animations
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('animate'); });
-  }, { threshold: 0.1 });
-  container.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  // Animations
+  const observer = new IntersectionObserver(e => e.forEach(en => en.isIntersecting && en.target.classList.add("animate")), {threshold: 0.1});
+  document.querySelectorAll(".fade-up").forEach(el => observer.observe(el));
 }
 
-function selectSection(id) {
-  selectedSection = sections.find(s => s.id === id);
-  renderPropertiesPanel();
-}
+// === Actions ===
+function add(type) { sections.push({id: Date.now(), html: templates[type].html, props: {...templates[type].props}}); save(); render(); }
+function duplicate(i) { sections.push({...sections[i], id: Date.now()}); save(); render(); }
+function up(i) { if(i>0) [sections[i-1], sections[i]] = [sections[i], sections[i-1]]; save(); render(); }
+function down(i) { if(i<sections.length-1) [sections[i], sections[i+1]] = [sections[i+1], sections[i]]; save(); render(); }
+function remove(i) { sections.splice(i,1); save(); render(); }
+function select(id) { selectedId = id; render(); showProps(); }
 
-function renderPropertiesPanel() {
-  if (!selectedSection) {
-    document.getElementById('propertiesContent').innerHTML = '<p>Select a section to edit</p>';
-    return;
+// === Properties Panel ===
+function showProps() {
+  const sec = sections.find(s => s.id === selectedId);
+  if (!sec) { document.getElementById("propertiesContent").innerHTML = "<p>Select a section</p>"; return; }
+
+  let html = `<h3>${sec.html.includes("hero") ? "Hero" : "Section"} Styles</h3>`;
+  if (sec.props.bgStart) {
+    html += `<div class="prop-group"><label>Gradient Start</label><input type="color" value="${sec.props.bgStart}" data-prop="bgStart"></div>`;
+    html += `<div class="prop-group"><label>Gradient End</label><input type="color" value="${sec.props.bgEnd}" data-prop="bgEnd"></div>`;
   }
-
-  let html = `<h3>${selectedSection.type.charAt(0).toUpperCase() + selectedSection.type.slice(1)} Section</h3>`;
-
-  // Hero-specific controls
-  if (selectedSection.type === 'hero') {
-    html += `
-      <div class="prop-group">
-        <label>Gradient Start</label>
-        <input type="color" value="${selectedSection.props.bgStart || '#667eea'}" data-prop="bgStart">
-      </div>
-      <div class="prop-group">
-        <label>Gradient End</label>
-        <input type="color" value="${selectedSection.props.bgEnd || '#764ba2'}" data-prop="bgEnd">
-      </div>
-    `;
-  }
-
-  // Universal controls for ALL sections
   html += `
-    <div class="prop-group">
-      <label>Section Background</label>
-      <input type="color" value="${selectedSection.props.bgColor || '#ffffff'}" data-prop="bgColor">
-    </div>
-    <div class="prop-group">
-      <label>Text Color (all text in section)</label>
-      <input type="color" value="${selectedSection.props.textColor || '#000000'}" data-prop="textColor">
-    </div>
-    <div class="prop-group">
-      <label>Heading Color (h1, h2, h3)</label>
-      <input type="color" value="${selectedSection.props.headingColor || '#111111'}" data-prop="headingColor">
-    </div>
+    <div class="prop-group"><label>Background</label><input type="color" value="${sec.props.bgColor || '#ffffff'}" data-prop="bgColor"></div>
+    <div class="prop-group"><label>Text Color</label><input type="color" value="${sec.props.textColor || '#000000'}" data-prop="textColor"></div>
+    <div class="prop-group"><label>Heading Color</label><input type="color" value="${sec.props.headingColor || '#111111'}" data-prop="headingColor"></div>
   `;
 
-  document.getElementById('propertiesContent').innerHTML = html;
+  document.getElementById("propertiesContent").innerHTML = html;
 
-  // Bind color inputs
-  document.querySelectorAll('#propertiesContent input[type="color"]').forEach(input => {
-    input.addEventListener('input', (e) => {
+  document.querySelectorAll("#propertiesContent input").forEach(inp => {
+    inp.addEventListener("input", e => {
       const prop = e.target.dataset.prop;
-      selectedSection.props[prop] = e.target.value;
+      sec.props[prop] = e.target.value;
 
-      const sectionEl = document.querySelector(`[data-id="${selectedSection.id}"] .section-content > div:first-child`) ||
-                        document.querySelector(`[data-id="${selectedSection.id}"] .section-content`);
+      const el = document.querySelector(`[data-id="${sec.id}"] .section-content > div`) || 
+                 document.querySelector(`[data-id="${sec.id}"] .section-content`);
 
-      if (!sectionEl) return;
-
-      // Apply styles
-      if (prop === 'bgColor') {
-        sectionEl.style.background = e.target.value;
-      }
-      if (prop === 'textColor') {
-        sectionEl.style.color = e.target.value;
-      }
-      if (prop === 'headingColor') {
-        sectionEl.querySelectorAll('h1, h2, h3, h4').forEach(h => {
-          h.style.color = e.target.value;
-        });
-      }
-      if (prop === 'bgStart' || prop === 'bgEnd') {
-        if (selectedSection.type === 'hero') {
-          const hero = sectionEl.querySelector('.hero-section');
-          if (hero) {
-            hero.style.background = `linear-gradient(135deg, ${selectedSection.props.bgStart}, ${selectedSection.props.bgEnd})`;
-          }
+      if (prop === "bgColor") el.style.background = e.target.value;
+      if (prop === "textColor") el.style.color = e.target.value;
+      if (prop === "headingColor") el.querySelectorAll("h1,h2,h3").forEach(h => h.style.color = e.target.value);
+      if (prop === "bgStart" || prop === "bgEnd") {
+        if (el.querySelector(".hero-section")) {
+          el.querySelector(".hero-section").style.background = `linear-gradient(135deg, ${sec.props.bgStart}, ${sec.props.bgEnd})`;
         }
       }
     });
   });
 }
 
-// === Controls ===
-function duplicateSection(id) { event.stopPropagation(); const s = sections.find(x=>x.id===id); sections.push({...s, id: Date.now()+Math.random()}); saveToHistory(); renderSections(); }
-function moveUp(id) { const i = sections.findIndex(s=>s.id===id); if(i>0){ [sections[i-1],sections[i]]=[sections[i],sections[i-1]]; saveToHistory(); renderSections(); }}
-function moveDown(id) { const i = sections.findIndex(s=>s.id===id); if(i<sections.length-1){ [sections[i],sections[i+1]]=[sections[i+1],sections[i]]; saveToHistory(); renderSections(); }}
-function deleteSection(id) { sections = sections.filter(s=>s.id!==id); saveToHistory(); renderSections(); }
-function clearAll() { if(confirm('Clear everything?')) { sections=[]; saveToHistory(); renderSections(); }}
-function toggleMobile() { isMobilePreview = !isMobilePreview; document.getElementById('canvas').classList.toggle('mobile-preview', isMobilePreview); }
-
 // === History ===
-function saveToHistory() {
-  history = history.slice(0, historyIndex + 1);
-  history.push(sections.map(s => ({...s, props:{...s.props}, html:s.html})));
-  historyIndex++;
+function save() {
+  history = history.slice(0, historyStep + 1);
+  history.push(JSON.parse(JSON.stringify(sections)));
+  historyStep = history.length - 1;
 }
-function undo() { if(historyIndex > 0){ historyIndex--; sections = history[historyIndex].map(s=>({...s})); renderSections(); }}
-function redo() { if(historyIndex < history.length-1){ historyIndex++; sections = history[historyIndex].map(s=>({...s})); renderSections(); }}
+document.getElementById("undoBtn").onclick = () => { if(historyStep>0) { historyStep--; sections = JSON.parse(JSON.stringify(history[historyStep])); render(); }}
+document.getElementById("redoBtn").onclick = () => { if(historyStep<history.length-1) { historyStep++; sections = JSON.parse(JSON.stringify(history[historyStep])); render(); }}
 
-// === Projects ===
-function saveProject() {
-  const name = document.getElementById('projectName').value.trim() || `Project ${new Date().toLocaleString()}`;
-  const data = { name, sections: sections.map(s=>({...s, props:{...s.props}})) };
-  let projects = JSON.parse(localStorage.getItem('lpb_projects') || '[]');
-  projects = projects.filter(p => p.name !== name);
-  projects.push(data);
-  localStorage.setItem('lpb_projects', JSON.stringify(projects));
-  alert('Project saved!');
-  loadSavedProjectsList();
-}
-function loadSavedProjectsList() {
-  const projects = JSON.parse(localStorage.getItem('lpb_projects') || '[]');
-  document.getElementById('savedProjects').innerHTML = '<h3 style="margin:1rem 0 0.5rem;font-size:0.9rem;color:var(--text-secondary);">Saved Projects</h3>' +
-    projects.map(p => `<div class="project-item" onclick="loadProject('${p.name}')">${p.name}</div>`).join('');
-}
-function loadProject(name) {
-  const projects = JSON.parse(localStorage.getItem('lpb_projects') || '[]');
-  const proj = projects.find(p => p.name === name);
-  if(proj){ sections = proj.sections; saveToHistory(); renderSections(); }
-}
-function loadTemplate(name) {
-  if(!confirm(`Load ${name.toUpperCase()} template? Current work will be lost.`)) return;
-  sections = templates[name].map(type => ({
-    id: Date.now() + Math.random(),
-    type,
-    html: sectionTemplates[type].html,
-    props: {...sectionTemplates[type].props}
-  }));
-  saveToHistory();
-  renderSections();
-}
-
-// === Export ===
-function exportHTML() {
-  const fullCSS = document.querySelector('link[rel="stylesheet"]').href.includes('http') 
-    ? document.getElementById('dynamicCSS')?.textContent || document.querySelector('style')?.textContent || ''
-    : document.documentElement.outerHTML.match(/<style>([\s\S]*?)<\/style>/i)?.[1] || '';
-
-  const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Landing Page</title>
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    ${document.querySelector('style').textContent}
-  </style>
-</head>
-<body>
-  ${sections.map(s => s.html).join('')}
-</body>
-</html>`;
-
-  const blob = new Blob([html], {type: 'text/html'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'my-landing-page.html'; a.click();
-  URL.revokeObjectURL(url);
-}
-
-// Smart text selection: click any text → select section + highlight text color
-document.addEventListener('click', (e) => {
-  const textEl = e.target.closest('h1, h2, h3, h4, p, a, span, div[contenteditable]');
-  if (!textEl) return;
-
-  const sectionEl = textEl.closest('.placed-section');
-  if (!sectionEl) return;
-
-  const id = parseInt(sectionEl.dataset.id);
-  selectSection(id);
-
-  // Auto-scroll properties panel to text color
-  setTimeout(() => {
-    const textColorInput = document.querySelector('input[data-prop="textColor"]');
-    if (textColorInput) {
-      textColorInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      textColorInput.style.transform = 'scale(1.1)';
-      setTimeout(() => textColorInput.style.transform = '', 300);
-    }
-  }, 100);
-});
-
-  // Inline editing
-  document.addEventListener('dblclick', e => {
-    const target = e.target;
-    if (target.isContentEditable || !target.closest('.placed-section')) return;
-    target.contentEditable = true;
-    target.focus();
+// === Init ===
+document.addEventListener("DOMContentLoaded", () => {
+  // Drag from sidebar
+  document.querySelectorAll(".section-item").forEach(item => {
+    item.addEventListener("dragstart", e => e.dataTransfer.setData("type", item.dataset.type));
   });
-  document.addEventListener('blur', e => {
+  ["dropZone","sectionsContainer"].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener("dragover", e => e.preventDefault());
+    el.addEventListener("drop", e => {
+      e.preventDefault();
+      const type = e.dataTransfer.getData("type");
+      if(type) add(type);
+    });
+  });
+
+  // Templates
+  document.querySelectorAll("[data-template]").forEach(btn => {
+    btn.onclick = () => {
+      if(confirm("Load template?")) {
+        sections = presets[btn.dataset.template].map(t => ({id: Date.now()+Math.random(), html: templates[t].html, props: {...templates[t].props}}));
+        save(); render();
+      }
+    };
+  });
+
+  // Save / Export
+  document.getElementById("saveBtn").onclick = () => {
+    const name = prompt("Name?", document.getElementById("projectName").value || "My Project");
+    if(name) localStorage.setItem("lpb_"+name, JSON.stringify(sections));
+    alert("Saved!");
+  };
+  document.getElementById("exportBtn").onclick = () => {
+    const css = Array.from(document.styleSheets[0].cssRules).map(r => r.cssText).join("");
+    const html = `<!DOCTYPE html><html><head><style>${css}</style></head><body>${sections.map(s=>s.html).join("")}</body></html>`;
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([html], {type:"text/html"}));
+    a.download = "landing-page.html";
+    a.click();
+  };
+
+  document.getElementById("clearBtn").onclick = () => { if(confirm("Clear all?")) { sections=[]; save(); render(); }};
+  document.getElementById("mobileToggle").onclick = () => document.getElementById("canvas").classList.toggle("mobile-preview");
+
+  // Inline editing + smart select
+  document.addEventListener("click", e => {
+    if (e.target.isContentEditable) return;
+    const text = e.target.closest("h1,h2,h3,p,a,[contenteditable]");
+    if (text) {
+      const section = text.closest(".placed-section");
+      if (section) select(parseInt(section.dataset.id));
+    }
+  });
+  document.addEventListener("dblclick", e => {
+    if (e.target.closest(".placed-section") && !e.target.closest(".section-controls")) {
+      e.target.contentEditable = true;
+      e.target.focus();
+    }
+  });
+  document.addEventListener("blur", e => {
     if (e.target.isContentEditable) {
       e.target.contentEditable = false;
-      const sectionEl = e.target.closest('.placed-section');
-      if (sectionEl) {
-        const id = parseInt(sectionEl.dataset.id);
-        const sec = sections.find(s => s.id === id);
-        if (sec) sec.html = sectionEl.querySelector('.section-content').innerHTML;
+      const section = e.target.closest(".placed-section");
+      if (section) {
+        const sec = sections.find(s => s.id == section.dataset.id);
+        if (sec) sec.html = section.querySelector(".section-content").innerHTML;
       }
     }
   }, true);
+
+  save();
+  render();
 });
