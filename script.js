@@ -223,7 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (sec) sec.html = section.querySelector(".section-content").innerHTML;
       }
     }
-  }, true);
+  }
 
   save();
   render();
