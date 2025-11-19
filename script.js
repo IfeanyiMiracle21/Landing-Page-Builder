@@ -1,255 +1,434 @@
-// ==== DATA ====
+// DATA
 let sections = [];
-let selectedId = null;
-let history = [];
-let historyStep = -1;
+    let selectedId = null;
+    let editMode = 'visual'; // 'visual' or 'code'
 
-const templates = {
-  hero: {html:`<div class="hero-section" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:8rem 2rem;text-align:center;">
-    <h1 contenteditable="true">Your Amazing Product</h1>
-    <p contenteditable="true">Build beautiful landing pages in minutes — no code needed.</p>
-    <a href="#" class="hero-cta" contenteditable="true" style="display:inline-block;padding:1rem 2.5rem;background:white;color:#667eea;border-radius:50px;margin-top:2rem;font-weight:bold;">Get Started</a>
-  </div>`, props:{bgStart:"#667eea",bgEnd:"#764ba2"}},
-  
-  features: {html:`<div style="padding:5rem 2rem;background:#f8fafc;text-align:center;">
-    <h2 contenteditable="true" style="margin-bottom:3rem;">Key Features</h2>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem;max-width:1200px;margin:auto;">
-      <div style="padding:2rem;background:white;border-radius:12px;"><h3 contenteditable="true">Fast</h3><p contenteditable="true">Lightning performance</p></div>
-      <div style="padding:2rem;background:white;border-radius:12px;"><h3 contenteditable="true">Beautiful</h3><p contenteditable="true">Stunning design</p></div>
-      <div style="padding:2rem;background:white;border-radius:12px;"><h3 contenteditable="true">Responsive</h3><p contenteditable="true">Works everywhere</p></div>
-    </div>
-  </div>`, props:{bgColor:"#f8fafc"}},
+    const templates = {
+      hero: {
+        html: '<div class="startup-hero"><h1 contenteditable="true">Build Something Amazing</h1><p contenteditable="true">Create stunning landing pages in minutes</p><a href="#" class="startup-cta" contenteditable="true">Get Started Free</a></div>',
+        css: '',
+        props: {bgType:"gradient", bgStart:"#667eea", bgEnd:"#764ba2", bgImage:""}
+      },
+      features: {
+        html: '<div style="padding:4rem 2rem;background:#f8fafc;"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem;max-width:1200px;margin:0 auto;"><div style="text-align:center;padding:2rem;"><div style="font-size:3rem;margin-bottom:1rem;">⚡</div><h3 contenteditable="true">Lightning Fast</h3><p contenteditable="true">Blazing fast performance</p></div><div style="text-align:center;padding:2rem;"><div style="font-size:3rem;margin-bottom:1rem;">🎨</div><h3 contenteditable="true">Beautiful Design</h3><p contenteditable="true">Pixel-perfect interfaces</p></div><div style="text-align:center;padding:2rem;"><div style="font-size:3rem;margin-bottom:1rem;">📱</div><h3 contenteditable="true">Responsive</h3><p contenteditable="true">Works on all devices</p></div></div></div>',
+        css: '',
+        props: {bgType:"solid", bgColor:"#f8fafc", bgImage:""}
+      },
+      stats: {
+        html: '<div style="background:#1e293b;padding:4rem 2rem;text-align:center;color:white;"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:3rem;max-width:1000px;margin:0 auto;"><div><h2 contenteditable="true" style="font-size:3rem;color:#3b82f6;margin-bottom:0.5rem;">10K+</h2><p contenteditable="true" style="color:#94a3b8;">Active Users</p></div><div><h2 contenteditable="true" style="font-size:3rem;color:#3b82f6;margin-bottom:0.5rem;">50K+</h2><p contenteditable="true" style="color:#94a3b8;">Pages Created</p></div><div><h2 contenteditable="true" style="font-size:3rem;color:#3b82f6;margin-bottom:0.5rem;">99%</h2><p contenteditable="true" style="color:#94a3b8;">Satisfaction</p></div></div></div>',
+        css: '',
+        props: {bgType:"solid", bgColor:"#1e293b", bgImage:""}
+      },
+      pricing: {
+        html: '<div style="padding:4rem 2rem;background:white;"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;max-width:1200px;margin:2rem auto 0;"><div style="border:2px solid #e2e8f0;border-radius:12px;padding:2rem;text-align:center;"><h3 contenteditable="true" style="color:#1e293b;margin-bottom:1rem;">Starter</h3><div contenteditable="true" style="font-size:3rem;font-weight:700;color:#3b82f6;margin-bottom:1rem;">$9</div><p contenteditable="true" style="color:#64748b;">Perfect for getting started</p></div><div style="border:2px solid #3b82f6;border-radius:12px;padding:2rem;text-align:center;box-shadow:0 10px 30px rgba(59,130,246,0.2);"><h3 contenteditable="true" style="color:#1e293b;margin-bottom:1rem;">Pro</h3><div contenteditable="true" style="font-size:3rem;font-weight:700;color:#3b82f6;margin-bottom:1rem;">$29</div><p contenteditable="true" style="color:#64748b;">Most popular choice</p></div><div style="border:2px solid #e2e8f0;border-radius:12px;padding:2rem;text-align:center;"><h3 contenteditable="true" style="color:#1e293b;margin-bottom:1rem;">Enterprise</h3><div contenteditable="true" style="font-size:3rem;font-weight:700;color:#3b82f6;margin-bottom:1rem;">$99</div><p contenteditable="true" style="color:#64748b;">Full power unleashed</p></div></div></div>',
+        css: '',
+        props: {bgType:"solid", bgColor:"#ffffff", bgImage:""}
+      },
+      cta: {
+        html: '<div style="background:linear-gradient(135deg,#f093fb,#f5576c);padding:5rem 2rem;text-align:center;color:white;"><h2 contenteditable="true" style="font-size:2.5rem;margin-bottom:1rem;">Ready to Get Started?</h2><p contenteditable="true" style="font-size:1.2rem;margin-bottom:2rem;opacity:0.9;">Join thousands building amazing pages</p><a href="#" style="display:inline-block;padding:1rem 2.5rem;background:white;color:#f093fb;border-radius:50px;text-decoration:none;font-weight:700;" contenteditable="true">Start Building Now</a></div>',
+        css: '',
+        props: {bgType:"gradient", bgStart:"#f093fb", bgEnd:"#f5576c", bgImage:""}
+      },
+      footer: {
+        html: '<div style="background:#0f172a;padding:3rem 2rem;text-align:center;color:#94a3b8;"><p contenteditable="true">&copy; 2025 Your Company. Built with Landing Page Builder</p></div>',
+        css: '',
+        props: {bgType:"solid", bgColor:"#0f172a", bgImage:""}
+      }
+    };
 
-  testimonials: {html:`<div style="padding:5rem 2rem;background:#1e293b;color:white;text-align:center;">
-    <h2 contenteditable="true">What People Say</h2>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;max-width:1200px;margin:3rem auto;">
-      <div style="background:rgba(255,255,255,0.1);padding:2rem;border-radius:12px;"><p contenteditable="true">"Game changer!"</p><strong>- Alex</strong></div>
-      <div style="background:rgba(255,255,255,0.1);padding:2rem;border-radius:12px;"><p contenteditable="true">"Love it!"</p><strong>- Sam</strong></div>
-    </div>
-  </div>`, props:{bgColor:"#1e293b"}},
+    const presets = {
+      startup: [
+        {type:"hero", html:'<div class="startup-hero"><h1 contenteditable="true">Launch Your Startup Faster</h1><p contenteditable="true">The all-in-one platform for modern SaaS companies</p><a href="#" class="startup-cta" contenteditable="true">Start Free Trial</a></div>'},
+        {type:"features"},
+        {type:"pricing"},
+        {type:"cta", customProps:{bgStart:"#4facfe", bgEnd:"#00f2fe"}},
+        {type:"footer"}
+      ],
+      portfolio: [
+        {type:"hero", html:'<div class="portfolio-hero"><div class="portfolio-hero-content"><h1 contenteditable="true">John Doe</h1><p contenteditable="true">Full-Stack Developer & Designer crafting beautiful digital experiences</p><a href="#" style="display:inline-block;padding:1rem 2rem;background:#00d4ff;color:#000428;border-radius:6px;text-decoration:none;font-weight:700;margin-top:1rem;" contenteditable="true">View My Work</a></div></div>'},
+        {type:"features", customProps:{bgColor:"#020617"}},
+        {type:"stats", customProps:{bgColor:"#0f172a"}},
+        {type:"footer", customProps:{bgColor:"#000000"}}
+      ],
+      agency: [
+        {type:"hero", html:'<div class="agency-hero"><h1 contenteditable="true">WE CREATE BRANDS</h1><p contenteditable="true" style="font-size:1.5rem;max-width:800px;margin:0 auto 2rem;">Award-winning creative agency specializing in brand identity and digital experiences</p><a href="#" style="display:inline-block;padding:1.2rem 3rem;background:#1e293b;color:white;border-radius:50px;text-decoration:none;font-weight:700;" contenteditable="true">See Our Work</a></div>'},
+        {type:"features", customProps:{bgColor:"#1e293b"}},
+        {type:"stats", customProps:{bgColor:"#fee140"}},
+        {type:"cta", customProps:{bgStart:"#a8edea", bgEnd:"#fed6e3"}},
+        {type:"footer"}
+      ],
+      ecommerce: [
+        {type:"hero", html:'<div class="ecommerce-hero"><div><h1 contenteditable="true">Shop The Latest Collection</h1><p contenteditable="true" style="font-size:1.3rem;margin-bottom:2rem;">Discover trendsetting fashion at unbeatable prices</p><a href="#" style="display:inline-block;padding:1.2rem 3rem;background:white;color:#ee0979;border-radius:50px;text-decoration:none;font-weight:700;" contenteditable="true">Shop Now</a></div><div style="background:rgba(255,255,255,0.2);border-radius:12px;height:300px;"></div></div>'},
+        {type:"features", customProps:{bgColor:"#ffffff"}},
+        {type:"pricing"},
+        {type:"cta"},
+        {type:"footer"}
+      ],
+      app: [
+        {type:"hero", html:'<div class="app-hero"><div><h1 contenteditable="true">Your App, Anywhere</h1><p contenteditable="true" style="font-size:1.3rem;margin-bottom:2rem;max-width:600px;margin:0 auto 2rem;">Download our mobile app and experience the future</p><div style="display:flex;gap:1rem;justify-content:center;"><a href="#" style="padding:1rem 2rem;background:#000;color:white;border-radius:12px;text-decoration:none;font-weight:600;" contenteditable="true">📱 App Store</a><a href="#" style="padding:1rem 2rem;background:#000;color:white;border-radius:12px;text-decoration:none;font-weight:600;" contenteditable="true">🤖 Google Play</a></div></div></div>'},
+        {type:"features"},
+        {type:"stats"},
+        {type:"footer"}
+      ],
+      blog: [
+        {type:"hero", html:'<div class="blog-hero"><h1 contenteditable="true">The Creative Journal</h1><p contenteditable="true" style="font-size:1.2rem;color:#64748b;max-width:600px;margin:0 auto;">Stories, insights, and inspiration from our team</p></div>'},
+        {type:"features", html:'<div style="padding:4rem 2rem;background:white;"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;max-width:1200px;margin:0 auto;"><div style="border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.1);"><div style="height:200px;background:linear-gradient(135deg,#667eea,#764ba2);"></div><div style="padding:1.5rem;"><h3 contenteditable="true" style="color:#1e293b;margin-bottom:0.5rem;">Featured Article</h3><p contenteditable="true" style="color:#64748b;">Discover the latest trends...</p></div></div><div style="border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.1);"><div style="height:200px;background:linear-gradient(135deg,#f093fb,#f5576c);"></div><div style="padding:1.5rem;"><h3 contenteditable="true" style="color:#1e293b;margin-bottom:0.5rem;">Popular Post</h3><p contenteditable="true" style="color:#64748b;">Explore creative solutions...</p></div></div></div></div>'},
+        {type:"cta", customProps:{bgStart:"#141e30", bgEnd:"#243b55"}},
+        {type:"footer", customProps:{bgColor:"#1e293b"}}
+      ]
+    };
 
-  stats: {html:`<div style="background:#1e293b;color:white;padding:5rem 2rem;text-align:center;">
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:3rem;max-width:1000px;margin:auto;">
-      <div><h2 contenteditable="true" style="font-size:3.5rem;color:#3b82f6;">10K+</h2><p>Users</p></div>
-      <div><h2 contenteditable="true" style="font-size:3.5rem;color:#3b82f6;">99%</h2><p>Satisfaction</p></div>
-    </div>
-  </div>`, props:{bgColor:"#1e293b"}},
+    function render() {
+      const container = document.getElementById("sectionsContainer");
+      const dropZone = document.getElementById("dropZone");
+      
+      if (sections.length === 0) {
+        container.innerHTML = "";
+        dropZone.style.display = "flex";
+        return;
+      }
+      
+      dropZone.style.display = "none";
+      
+      container.innerHTML = sections.map((sec, i) => 
+        '<div class="placed-section ' + (selectedId === sec.id ? 'selected' : '') + '" data-id="' + sec.id + '"><div class="section-controls"><button data-action="code" data-index="' + i + '">💻</button><button data-action="up" data-index="' + i + '">↑</button><button data-action="down" data-index="' + i + '">↓</button><button data-action="delete" data-index="' + i + '">×</button></div><div class="section-content">' + sec.html + '</div></div>'
+      ).join("");
+      
+      sections.forEach(function(sec) {
+        updateSectionStyle(sec);
+        if (sec.css) {
+          applySectionCSS(sec);
+        }
+      });
 
-  pricing: {html:`<div style="padding:5rem 2rem;background:white;text-align:center;">
-    <h2 contenteditable="true">Simple Pricing</h2>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;max-width:1000px;margin:3rem auto;">
-      <div style="border:2px solid #e2e8f0;padding:2rem;border-radius:12px;"><h3>Starter</h3><div style="font-size:2.5rem;font-weight:bold;color:#3b82f6;margin:1rem 0;">$9/mo</div><p contenteditable="true">Basic features</p></div>
-      <div style="border:2px solid #3b82f6;padding:2rem;border-radius:12px;background:#3b82f6;color:white;"><h3>Pro</h3><div style="font-size:2.5rem;font-weight:bold;margin:1rem 0;">$29/mo</div><p contenteditable="true">Most popular</p></div>
-    </div>
-  </div>`, props:{bgColor:"#ffffff"}},
+      document.querySelectorAll('.placed-section').forEach(function(el) {
+        el.addEventListener('click', function(e) {
+          if (!e.target.closest('.section-controls') && !e.target.contentEditable) {
+            selectSection(parseInt(this.dataset.id));
+          }
+        });
+      });
+      
+      document.querySelectorAll('.section-controls button').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const action = this.dataset.action;
+          const index = parseInt(this.dataset.index);
+          
+          if (action === 'code') {
+            selectSection(sections[index].id);
+            editMode = 'code';
+            document.getElementById('codeMode').click();
+          } else if (action === 'up' && index > 0) {
+            const temp = sections[index-1];
+            sections[index-1] = sections[index];
+            sections[index] = temp;
+            render();
+          } else if (action === 'down' && index < sections.length - 1) {
+            const temp = sections[index];
+            sections[index] = sections[index+1];
+            sections[index+1] = temp;
+            render();
+          } else if (action === 'delete') {
+            sections.splice(index, 1);
+            selectedId = null;
+            render();
+            showProps();
+          }
+        });
+      });
 
-  cta: {html:`<div style="background:linear-gradient(135deg,#f093fb,#f5576c);color:white;padding:6rem 2rem;text-align:center;">
-    <h2 contenteditable="true">Ready to Start?</h2>
-    <p contenteditable="true">Join thousands of happy users</p>
-    <a href="#" contenteditable="true" style="display:inline-block;padding:1rem 2.5rem;background:white;color:#f5576c;border-radius:50px;margin-top:2rem;font-weight:bold;">Get Started Now</a>
-  </div>`, props:{bgStart:"#f093fb",bgEnd:"#f5576c"}},
+      document.querySelectorAll('[contenteditable="true"]').forEach(function(el) {
+        el.addEventListener('blur', function() {
+          const section = this.closest('.placed-section');
+          if (section) {
+            const sec = sections.find(function(s) { return s.id == section.dataset.id; });
+            if (sec) {
+              sec.html = section.querySelector('.section-content').innerHTML;
+            }
+          }
+        });
+      });
 
-  footer: {html:`<div style="background:#0f172a;color:#94a3b8;padding:3rem;text-align:center;">
-    <p>&copy; 2025 Your Company. Made with ❤️ using Landing Builder</p>
-  </div>`, props:{bgColor:"#0f172a"}}
-};
+      document.querySelectorAll('.placed-section').forEach(function(section) {
+        section.addEventListener('dblclick', function(e) {
+          if (e.target.closest('.section-controls')) return;
+          
+          const target = e.target;
+          if (!target.contentEditable || target.contentEditable === 'inherit') {
+            target.contentEditable = 'true';
+            target.focus();
+            
+            const range = document.createRange();
+            range.selectNodeContents(target);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+            
+            target.addEventListener('blur', function() {
+              this.contentEditable = 'inherit';
+              const section = this.closest('.placed-section');
+              if (section) {
+                const sec = sections.find(function(s) { return s.id == section.dataset.id; });
+                if (sec) {
+                  sec.html = section.querySelector('.section-content').innerHTML;
+                }
+              }
+            }, { once: true });
+          }
+        });
+      });
+    }
 
-const presets = {
-  saas: ["hero","features","testimonials","stats","pricing","cta","footer"],
-  agency: ["hero","features","testimonials","pricing","cta","footer"]
-};
-
-// ==== RENDER ====
-function render() {
-  const container = document.getElementById("sectionsContainer");
-  if (sections.length === 0) {
-    container.innerHTML = "";
-    document.getElementById("dropZone").style.display = "flex";
-    return;
-  }
-  document.getElementById("dropZone").style.display = "none";
-
-  container.innerHTML = sections.map(sec => `
-    <div class="placed-section ${selectedId === sec.id ? 'selected' : ''}" data-id="${sec.id}">
-      <div class="section-controls">
-        <button onclick="duplicate(${sec.id})">Copy</button>
-        <button onclick="moveUp(${sec.id})">↑</button>
-        <button onclick="moveDown(${sec.id})">↓</button>
-        <button onclick="remove(${sec.id})">×</button>
-      </div>
-      <button class="image-upload-btn" onclick="uploadImage(${sec.id})">Upload Image</button>
-      <div class="section-content">${sec.html}</div>
-    </div>
-  `).join("");
-}
-
-function saveHistory() {
-  history = history.slice(0, historyStep + 1);
-  history.push(JSON.parse(JSON.stringify(sections)));
-  historyStep++;
-}
-
-function addSection(type) {
-  const tid = Date.now();
-  sections.push({ id: tid, html: templates[type].html, props: { ...templates[type].props } });
-  saveHistory();
-  render();
-  selectSection(tid);
-}
-
-// ==== ACTIONS ====
-function duplicate(id) { const i = sections.findIndex(s=>s.id===id); if(i>-1){ sections.splice(i+1,0,{...sections[i],id:Date.now()}); saveHistory(); render(); }}
-function moveUp(id) { const i = sections.findIndex(s=>s.id===id); if(i>0){ [sections[i-1],sections[i]] = [sections[i],sections[i-1]]; saveHistory(); render(); }}
-function moveDown(id) { const i = sections.findIndex(s=>s.id===id); if(i<sections.length-1){ [sections[i],sections[i+1]] = [sections[i+1],sections[i]]; saveHistory(); render(); }}
-function remove(id) { sections = sections.filter(s=>s.id!==id); selectedId=null; saveHistory(); render(); showProps(); }
-function selectSection(id) { selectedId = id; render(); showProps(); }
-
-// ==== IMAGE UPLOAD ====
-function uploadImage(sectionId) {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "image/*";
-  input.onchange = e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = evt => {
-      const imgHtml = `<img src="${evt.target.result}" style="max-width:100%;height:auto;border-radius:8px;margin:1rem 0;display:block;" alt="Uploaded image">`;
-      const sec = sections.find(s=>s.id===sectionId);
-      sec.html += imgHtml;
-      saveHistory();
+    function selectSection(id) {
+      selectedId = id;
       render();
-      selectSection(sectionId);
-    };
-    reader.readAsDataURL(file);
-  };
-  input.click();
-}
-
-// ==== PROPERTIES PANEL ====
-function showProps() {
-  const sec = sections.find(s=>s.id===selectedId);
-  const panel = document.getElementById("propertiesContent");
-  if (!sec) { panel.innerHTML = "<p style='color:var(--text-secondary);'>Select a section</p>"; return; }
-
-  let html = `<h3 style="color:var(--accent);margin-bottom:1rem;">Section Styles</h3>`;
-
-  if (sec.props.bgStart !== undefined) {
-    html += `<div class="prop-group"><label>Gradient Start</label><input type="color" value="${sec.props.bgStart}" data-prop="bgStart"></div>`;
-    html += `<div class="prop-group"><label>Gradient End</label><input type="color" value="${sec.props.bgEnd}" data-prop="bgEnd"></div>`;
-  }
-  if (sec.props.bgColor !== undefined) {
-    html += `<div class="prop-group"><label>Background Color</label><input type="color" value="${sec.props.bgColor}" data-prop="bgColor"></div>`;
-  }
-
-  panel.innerHTML = html;
-
-  panel.querySelectorAll("input").forEach(inp => {
-    inp.oninput = () => {
-      const prop = inp.dataset.prop;
-      sec.props[prop] = inp.value;
-      const root = document.querySelector(`[data-id="${sec.id}"] .section-content > *`) || document.querySelector(`[data-id="${sec.id}"] .section-content`);
-      if (prop === "bgColor") root.style.background = inp.value;
-      if (prop.includes("bgStart") || prop.includes("bgEnd")) {
-        root.style.background = `linear-gradient(135deg, ${sec.props.bgStart}, ${sec.props.bgEnd})`;
-      }
-      saveHistory();
-    };
-  });
-}
-
-// ==== INIT ====
-document.addEventListener("DOMContentLoaded", () => {
-  saveHistory(); // initial empty state
-
-  // Drag & Drop
-  document.querySelectorAll(".section-item").forEach(el => {
-    el.addEventListener("dragstart", e => {
-      e.dataTransfer.setData("type", el.dataset.type);
-    });
-  });
-
-  ["dropZone", "sectionsContainer"].forEach(id => {
-    const zone = document.getElementById(id);
-    zone.addEventListener("dragover", e => e.preventDefault());
-    zone.addEventListener("dragenter", () => zone.classList.add("drag-over"));
-    zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
-    zone.addEventListener("drop", e => {
-      e.preventDefault();
-      zone.classList.remove("drag-over");
-      const type = e.dataTransfer.getData("type");
-      if (type) addSection(type);
-    });
-  });
-
-  // Click to select
-  document.getElementById("sectionsContainer").addEventListener("click", e => {
-    if (e.target.closest(".section-controls") || e.target.classList.contains("image-upload-btn")) return;
-    const sec = e.target.closest(".placed-section");
-    if (sec) selectSection(Number(sec.dataset.id));
-  });
-
-  // Double-click to edit text
-  document.getElementById("sectionsContainer").addEventListener("dblclick", e => {
-    let el = e.target;
-    if (el.isContentEditable) return;
-    if (["H1","H2","H3","P","A","DIV","SPAN"].includes(el.tagName)) {
-      el.contentEditable = true;
-      el.focus();
-      document.getSelection().selectAllChildren(el);
+      showProps();
     }
-  });
 
-  document.getElementById("sectionsContainer").addEventListener("blur", e => {
-    if (e.target.isContentEditable) {
-      e.target.contentEditable = false;
-      const secDiv = e.target.closest(".placed-section");
-      const sec = sections.find(s => s.id == secDiv.dataset.id);
-      if (sec) {
-        sec.html = secDiv.querySelector(".section-content").innerHTML;
-        saveHistory();
+    function showProps() {
+      const sec = sections.find(function(s) { return s.id === selectedId; });
+      const propsDiv = document.getElementById("propertiesContent");
+      
+      if (!sec) {
+        propsDiv.innerHTML = "<p style='color:#94a3b8;'>Select a section to edit</p>";
+        return;
+      }
+      
+      if (editMode === 'code') {
+        showCodeEditor(sec);
+      } else {
+        showVisualEditor(sec);
       }
     }
-  }, true);
 
-  // Buttons
-  document.querySelectorAll("[data-template]").forEach(btn => {
-    btn.onclick = () => {
-      if (confirm("Load template? This will replace current page.")) {
-        sections = presets[btn.dataset.template].map(t => ({
-          id: Date.now() + Math.random()*10000,
-          html: templates[t].html,
-          props: {...templates[t].props}
-        }));
-        selectedId = null;
-        saveHistory();
+    function showVisualEditor(sec) {
+      const propsDiv = document.getElementById("propertiesContent");
+      let html = '<h3 style="margin-bottom:1.5rem;color:#3b82f6;">Visual Editor</h3>';
+      
+      html += '<div class="prop-group"><label>Background Type</label><select id="bgType"><option value="solid"' + (sec.props.bgType === 'solid' ? ' selected' : '') + '>Solid Color</option><option value="gradient"' + (sec.props.bgType === 'gradient' ? ' selected' : '') + '>Gradient</option><option value="image"' + (sec.props.bgType === 'image' ? ' selected' : '') + '>Image</option></select></div>';
+      
+      html += '<div id="colorControls"></div>';
+      
+      html += '<div class="prop-group"><label>Background Image</label><input type="file" id="bgImage" accept="image/*"><small style="color:#64748b;display:block;margin-top:0.5rem;">Upload background image</small>';
+      if (sec.props.bgImage) {
+        html += '<img src="' + sec.props.bgImage + '" class="image-preview" />';
+      }
+      html += '</div>';
+      
+      html += '<div class="edit-hint">💡 <strong>Double-click</strong> any element to edit<br>💻 Click the <strong>Code button</strong> (💻) for advanced editing</div>';
+      
+      propsDiv.innerHTML = html;
+      
+      updateColorControls(sec);
+      
+      document.getElementById('bgType').addEventListener('change', function(e) {
+        sec.props.bgType = e.target.value;
+        updateColorControls(sec);
+        updateSectionStyle(sec);
+      });
+      
+      document.getElementById('bgImage').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            sec.props.bgImage = event.target.result;
+            updateSectionStyle(sec);
+            showProps();
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    function showCodeEditor(sec) {
+      const propsDiv = document.getElementById("propertiesContent");
+      let html = '<h3 style="margin-bottom:1.5rem;color:#3b82f6;">Code Editor</h3>';
+      
+      html += '<div class="prop-group"><label>HTML</label><textarea id="htmlCode">' + sec.html.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</textarea></div>';
+      
+      html += '<div class="prop-group"><label>Custom CSS (optional)</label><textarea id="cssCode" placeholder=".my-class { color: red; }">' + (sec.css || '') + '</textarea></div>';
+      
+      html += '<button class="btn btn-primary" style="width:100%;margin-bottom:1rem;" id="applyCode">✅ Apply Changes</button>';
+      
+      html += '<div class="edit-hint">⚠️ <strong>Warning:</strong> Editing code directly. Make sure your HTML is valid!</div>';
+      
+      propsDiv.innerHTML = html;
+      
+      document.getElementById('applyCode').addEventListener('click', function() {
+        const htmlCode = document.getElementById('htmlCode').value;
+        const cssCode = document.getElementById('cssCode').value;
+        
+        sec.html = htmlCode.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+        sec.css = cssCode;
+        
         render();
         showProps();
+        alert('✅ Code applied successfully!');
+      });
+    }
+
+    function updateColorControls(sec) {
+      const container = document.getElementById('colorControls');
+      let html = '';
+      
+      if (sec.props.bgType === 'solid') {
+        html = '<div class="prop-group"><label>Background Color</label><input type="color" value="' + (sec.props.bgColor || '#ffffff') + '" id="bgColor"></div>';
+      } else if (sec.props.bgType === 'gradient') {
+        html = '<div class="prop-group"><label>Gradient Start</label><input type="color" value="' + (sec.props.bgStart || '#667eea') + '" id="bgStart"></div>';
+        html += '<div class="prop-group"><label>Gradient End</label><input type="color" value="' + (sec.props.bgEnd || '#764ba2') + '" id="bgEnd"></div>';
       }
-    };
-  });
+      
+      container.innerHTML = html;
+      
+      if (sec.props.bgType === 'solid') {
+        document.getElementById('bgColor').addEventListener('input', function(e) {
+          sec.props.bgColor = e.target.value;
+          updateSectionStyle(sec);
+        });
+      } else if (sec.props.bgType === 'gradient') {
+        document.getElementById('bgStart').addEventListener('input', function(e) {
+          sec.props.bgStart = e.target.value;
+          updateSectionStyle(sec);
+        });
+        document.getElementById('bgEnd').addEventListener('input', function(e) {
+          sec.props.bgEnd = e.target.value;
+          updateSectionStyle(sec);
+        });
+      }
+    }
 
-  document.getElementById("undoBtn").onclick = () => { if(historyStep>0){ historyStep--; sections = JSON.parse(JSON.stringify(history[historyStep])); render(); showProps(); }};
-  document.getElementById("redoBtn").onclick = () => { if(historyStep<history.length-1){ historyStep++; sections = JSON.parse(JSON.stringify(history[historyStep])); render(); showProps(); }};
-  document.getElementById("clearBtn").onclick = () => { if(confirm("Clear all?")){ sections=[]; selectedId=null; saveHistory(); render(); }};
+    function updateSectionStyle(sec) {
+      const el = document.querySelector('[data-id="' + sec.id + '"] .section-content > div');
+      if (!el) return;
+      
+      if (sec.props.bgType === 'image' && sec.props.bgImage) {
+        el.style.backgroundImage = 'url(' + sec.props.bgImage + ')';
+        el.style.backgroundSize = 'cover';
+        el.style.backgroundPosition = 'center';
+      } else if (sec.props.bgType === 'gradient') {
+        el.style.backgroundImage = 'linear-gradient(135deg, ' + (sec.props.bgStart || '#667eea') + ', ' + (sec.props.bgEnd || '#764ba2') + ')';
+      } else {
+        el.style.background = sec.props.bgColor || '#ffffff';
+        el.style.backgroundImage = 'none';
+      }
+    }
 
-  document.getElementById("saveBtn").onclick = () => {
-    const name = prompt("Project name:", document.getElementById("projectName").value || "My Project");
-    if(name) localStorage.setItem("lpb_"+name, JSON.stringify(sections));
-    alert("Saved!");
-  };
+    function applySectionCSS(sec) {
+      let styleEl = document.getElementById('section-css-' + sec.id);
+      if (!styleEl) {
+        styleEl = document.createElement('style');
+        styleEl.id = 'section-css-' + sec.id;
+        document.head.appendChild(styleEl);
+      }
+      styleEl.textContent = '[data-id="' + sec.id + '"] { ' + sec.css + ' }';
+    }
 
-  document.getElementById("exportBtn").onclick = () => {
-    const fullHtml = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Landing Page</title><style>${document.querySelector("style").textContent}</style></head><body>${sections.map(s=>s.html).join("")}</body></html>`;
-    const blob = new Blob([fullHtml], {type:"text/html"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "my-landing-page.html";
-    a.click();
-  };
+    function addSection(type, customHTML, customProps) {
+      const template = templates[type];
+      const html = customHTML || template.html;
+      const props = customProps ? Object.assign({}, template.props, customProps) : JSON.parse(JSON.stringify(template.props));
+      sections.push({
+        id: Date.now() + Math.random(),
+        html: html,
+        css: template.css || '',
+        props: props
+      });
+      render();
+    }
 
-  document.getElementById("mobileToggle").onclick = () => document.getElementById("canvas").classList.toggle("mobile-preview");
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('visualMode').addEventListener('click', function() {
+        editMode = 'visual';
+        this.classList.add('active');
+        document.getElementById('codeMode').classList.remove('active');
+        showProps();
+      });
 
-  render();
-});
+      document.getElementById('codeMode').addEventListener('click', function() {
+        editMode = 'code';
+        this.classList.add('active');
+        document.getElementById('visualMode').classList.remove('active');
+        showProps();
+      });
+
+      document.querySelectorAll('.section-item').forEach(function(item) {
+        item.addEventListener('dragstart', function(e) {
+          e.dataTransfer.setData('type', this.dataset.type);
+        });
+      });
+      
+      const dropZone = document.getElementById('dropZone');
+      const container = document.getElementById('sectionsContainer');
+      
+      [dropZone, container].forEach(function(zone) {
+        zone.addEventListener('dragover', function(e) {
+          e.preventDefault();
+        });
+        
+        zone.addEventListener('drop', function(e) {
+          e.preventDefault();
+          const type = e.dataTransfer.getData('type');
+          if (type) {
+            addSection(type);
+          }
+        });
+      });
+      
+      document.querySelectorAll('.template-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          if (confirm('Load template? This will replace your current page.')) {
+            const templateName = this.dataset.template;
+            sections = presets[templateName].map(function(item, i) {
+              const template = templates[item.type];
+              const html = item.html || template.html;
+              const props = item.customProps ? Object.assign({}, template.props, item.customProps) : JSON.parse(JSON.stringify(template.props));
+              return {
+                id: Date.now() + i + Math.random(),
+                html: html,
+                css: template.css || '',
+                props: props
+              };
+            });
+            selectedId = null;
+            render();
+            showProps();
+          }
+        });
+      });
+      
+      document.getElementById('clearBtn').addEventListener('click', function() {
+        if (confirm('Clear all sections?')) {
+          sections = [];
+          selectedId = null;
+          render();
+          showProps();
+        }
+      });
+      
+      document.getElementById('exportBtn').addEventListener('click', function() {
+        const styles = document.querySelector('style').textContent;
+        const htmlContent = sections.map(function(s) { return s.html; }).join('\n');
+        const customCSS = sections.map(function(s) { return s.css || ''; }).filter(function(c) { return c; }).join('\n');
+        
+        const html = '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>My Landing Page</title>\n  <style>\n    * { margin:0; padding:0; box-sizing:border-box; }\n    body { font-family: -apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif; }\n    ' + styles + '\n    ' + customCSS + '\n  </style>\n</head>\n<body>\n' + htmlContent + '\n</body>\n</html>';
+        
+        const blob = new Blob([html], {type: 'text/html'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'landing-page.html';
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('✅ HTML exported with custom code! Check your downloads.');
+      });
+      
+      document.getElementById('saveBtn').addEventListener('click', function() {
+        const name = document.getElementById('projectName').value || 'My Project';
+        localStorage.setItem('lpb_' + name, JSON.stringify(sections));
+        alert('✅ Project saved as: ' + name);
+      });
+      
+      render();
+    });
