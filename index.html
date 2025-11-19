@@ -1,73 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Landing Page Builder</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Landing Page Builder - Fixed & Enhanced</title>
 </head>
 <body>
-  <div class="builder-container">
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <h2>Projects</h2>
-      <input type="text" id="projectName" placeholder="My Project" />
-      <button class="btn btn-primary" id="saveBtn">Save Project</button>
-      <div id="savedProjects"></div>
+  <div class="sidebar">
+  <h2 style="color:var(--accent); margin-bottom:1rem;">Projects</h2>
+  <input type="text" id="projectName" placeholder="My Project Name">
+  <button class="btn btn-primary" id="saveBtn">Save Project</button>
+  <div id="savedProjects" style="margin-top:1rem;"></div>
 
-      <h2 style="margin-top:2rem;">Templates</h2>
-      <button class="template-btn" data-template="saas">SaaS</button>
-      <button class="template-btn" data-template="agency">Agency</button>
-      <button class="template-btn" data-template="portfolio">Portfolio</button>
+  <h2 style="color:var(--accent); margin:2rem 0 1rem;">Templates</h2>
+  <button class="btn btn-secondary" data-template="saas" style="width:100%; text-align:left; margin-bottom:0.5rem;">SaaS Landing</button>
+  <button class="btn btn-secondary" data-template="agency" style="width:100%; text-align:left; margin-bottom:0.5rem;">Agency Site</button>
 
-      <h2 style="margin-top:2rem;">Components</h2>
-      <div class="section-library">
-        <div class="section-item" draggable="true" data-type="hero">Hero</div>
-        <div class="section-item" draggable="true" data-type="features">Features</div>
-        <div class="section-item" draggable="true" data-type="testimonials">Testimonials</div>
-        <div class="section-item" draggable="true" data-type="team">Team</div>
-        <div class="section-item" draggable="true" data-type="blog">Blog</div>
-        <div class="section-item" draggable="true" data-type="stats">Stats</div>
-        <div class="section-item" draggable="true" data-type="pricing">Pricing</div>
-        <div class="section-item" draggable="true" data-type="cta">CTA</div>
-        <div class="section-item" draggable="true" data-type="footer">Footer</div>
-      </div>
-    </div>
+  <h2 style="color:var(--accent); margin:2rem 0 1rem;">Components</h2>
+  <div class="section-item" draggable="true" data-type="hero">Hero Section</div>
+  <div class="section-item" draggable="true" data-type="features">Features</div>
+  <div class="section-item" draggable="true" data-type="testimonials">Testimonials</div>
+  <div class="section-item" draggable="true" data-type="stats">Stats</div>
+  <div class="section-item" draggable="true" data-type="pricing">Pricing</div>
+  <div class="section-item" draggable="true" data-type="cta">Call to Action</div>
+  <div class="section-item" draggable="true" data-type="footer">Footer</div>
+</div>
 
-    <!-- Canvas -->
-    <div class="canvas" id="canvas">
-      <div class="canvas-header">
-        <h1>Landing Page Builder</h1>
-        <div class="header-actions">
-          <button class="btn btn-secondary" id="undoBtn">Undo</button>
-          <button class="btn btn-secondary" id="redoBtn">Redo</button>
-          <button class="btn btn-secondary" id="clearBtn">Clear</button>
-          <button class="btn btn-primary" id="exportBtn">Export HTML</button>
-        </div>
-      </div>
-      <div class="preview-area">
-        <div class="preview-wrapper" id="previewWrapper">
-          <div class="drop-zone" id="dropZone">
-            <h3>Drag components here</h3>
-            <p>Start building!</p>
-          </div>
-          <div id="sectionsContainer"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Properties -->
-    <div class="properties-panel">
-      <h2>Properties</h2>
-      <div id="propertiesContent">
-        <p style="color:#94a3b8;">Click a section to edit</p>
-      </div>
+<div class="canvas" id="canvas">
+  <div class="canvas-header">
+    <h1>Landing Page Builder</h1>
+    <div class="header-actions">
+      <button class="btn btn-secondary" id="undoBtn">Undo</button>
+      <button class="btn btn-secondary" id="redoBtn">Redo</button>
+      <button class="btn btn-secondary" id="clearBtn">Clear All</button>
+      <button class="btn btn-primary" id="exportBtn">Export HTML</button>
     </div>
   </div>
+  <div class="preview-wrapper" id="previewWrapper">
+    <div class="drop-zone" id="dropZone">Drag components here to start</div>
+    <div id="sectionsContainer"></div>
+  </div>
+</div>
 
-  <div class="mobile-toggle" id="mobileToggle">Mobile</div>
+<div class="properties-panel">
+  <h2 style="color:var(--accent);">Properties</h2>
+  <div id="propertiesContent">
+    <p style="color:var(--text-secondary);">Click a section to edit</p>
+  </div>
+</div>
 
-  <!-- No Framer Motion CDN (we'll animate with CSS only for max compatibility) -->
+<div class="mobile-toggle" id="mobileToggle">Mobile Preview</div>
+
   <script src="script.js"></script>
 </body>
 </html>
