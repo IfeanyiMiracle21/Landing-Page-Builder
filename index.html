@@ -3,34 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Advanced Landing Page Builder</title>
+  <title>Landing Page Builder</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/framer-motion@11/dist/framer-motion.min.js"></script>
 </head>
 <body>
   <div class="builder-container">
-    <!-- Left Sidebar -->
+    <!-- Sidebar -->
     <div class="sidebar">
       <h2>Projects</h2>
-      <input type="text" id="projectName" placeholder="My Awesome Project" />
-      <button class="btn btn-primary" onclick="saveProject()">Save Project</button>
+      <input type="text" id="projectName" placeholder="My Project" />
+      <button class="btn btn-primary" id="saveBtn">Save Project</button>
       <div id="savedProjects"></div>
 
       <h2 style="margin-top:2rem;">Templates</h2>
-      <button class="template-btn" onclick="loadTemplate('saas')">SaaS Landing</button>
-      <button class="template-btn" onclick="loadTemplate('agency')">Agency Site</button>
-      <button class="template-btn" onclick="loadTemplate('portfolio')">Portfolio</button>
+      <button class="template-btn" data-template="saas">SaaS</button>
+      <button class="template-btn" data-template="agency">Agency</button>
+      <button class="template-btn" data-template="portfolio">Portfolio</button>
 
       <h2 style="margin-top:2rem;">Components</h2>
       <div class="section-library">
-        <div class="section-item" draggable="true" data-type="hero">Hero Section</div>
-        <div class="section-item" draggable="true" data-type="features">Features Grid</div>
+        <div class="section-item" draggable="true" data-type="hero">Hero</div>
+        <div class="section-item" draggable="true" data-type="features">Features</div>
         <div class="section-item" draggable="true" data-type="testimonials">Testimonials</div>
         <div class="section-item" draggable="true" data-type="team">Team</div>
-        <div class="section-item" draggable="true" data-type="blog">Blog Grid</div>
-        <div class="section-item" draggable="true" data-type="stats">Stats Counter</div>
-        <div class="section-item" draggable="true" data-type="pricing">Pricing Cards</div>
-        <div class="section-item" draggable="true" data-type="cta">CTA Banner</div>
+        <div class="section-item" draggable="true" data-type="blog">Blog</div>
+        <div class="section-item" draggable="true" data-type="stats">Stats</div>
+        <div class="section-item" draggable="true" data-type="pricing">Pricing</div>
+        <div class="section-item" draggable="true" data-type="cta">CTA</div>
         <div class="section-item" draggable="true" data-type="footer">Footer</div>
       </div>
     </div>
@@ -40,36 +39,35 @@
       <div class="canvas-header">
         <h1>Landing Page Builder</h1>
         <div class="header-actions">
-          <button class="btn btn-secondary" onclick="undo()">Undo</button>
-          <button class="btn btn-secondary" onclick="redo()">Redo</button>
-          <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
-          <button class="btn btn-primary" onclick="exportHTML()">Export HTML</button>
+          <button class="btn btn-secondary" id="undoBtn">Undo</button>
+          <button class="btn btn-secondary" id="redoBtn">Redo</button>
+          <button class="btn btn-secondary" id="clearBtn">Clear</button>
+          <button class="btn btn-primary" id="exportBtn">Export HTML</button>
         </div>
       </div>
       <div class="preview-area">
         <div class="preview-wrapper" id="previewWrapper">
           <div class="drop-zone" id="dropZone">
-            <div class="drop-zone-content">
-              <h3>Drag components here</h3>
-              <p>Start building your masterpiece</p>
-            </div>
+            <h3>Drag components here</h3>
+            <p>Start building!</p>
           </div>
           <div id="sectionsContainer"></div>
         </div>
       </div>
     </div>
 
-    <!-- Properties Panel -->
+    <!-- Properties -->
     <div class="properties-panel">
       <h2>Properties</h2>
       <div id="propertiesContent">
-        <p style="color:var(--text-secondary);">Select a section to edit</p>
+        <p style="color:#94a3b8;">Click a section to edit</p>
       </div>
     </div>
   </div>
 
-  <div class="mobile-toggle" onclick="toggleMobile()">Mobile</div>
+  <div class="mobile-toggle" id="mobileToggle">Mobile</div>
 
-  <script src="script.js" defer></script>
+  <!-- No Framer Motion CDN (we'll animate with CSS only for max compatibility) -->
+  <script src="script.js"></script>
 </body>
 </html>
