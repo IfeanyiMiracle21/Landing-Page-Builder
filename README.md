@@ -362,23 +362,6 @@ Contributions are welcome! Here's how:
 
 ---
 
-## 🎓 Learning Resources
-
-### Beginner Tutorials
-- [Getting Started Video](link)
-- [Basic Template Customization](link)
-- [Exporting Your First Page](link)
-
-### Advanced Guides
-- [Custom CSS Mastery](link)
-- [Creating Reusable Components](link)
-- [Advanced Animations](link)
-
-### Community
-- [Discord Server](link)
-- [Forum](link)
-- [YouTube Channel](link)
-
 ---
 
 ## 📄 License
