@@ -400,19 +400,11 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 
 ---
 
-## 📞 Support
-
-### Getting Help
-- 📧 Email: support@landingbuilder.com
-- 💬 Discord: [Join our server](link)
-- 🐦 Twitter: [@landingbuilder](link)
-- 📖 Docs: [docs.landingbuilder.com](link)
-
 ### Bug Reports
-Found a bug? [Open an issue](https://github.com/yourusername/landing-page-builder/issues)
+Found a bug? [Open an issue](https://github.com/ifeanyiMiracle21/landing-page-builder/issues)
 
 ### Feature Requests
-Have an idea? [Start a discussion](https://github.com/yourusername/landing-page-builder/discussions)
+Have an idea? [Start a discussion](https://github.com/ifeanyiMiracle21/landing-page-builder/discussions)
 
 ---
 
@@ -423,18 +415,5 @@ If you find this project helpful, please:
 - 🐦 Share on Twitter
 - 📝 Write a blog post
 - 💬 Tell your friends
-
----
-
-## 📊 Stats
-
-![GitHub stars](https://img.shields.io/github/stars/yourusername/landing-page-builder?style=social)
-![GitHub forks](https://img.shields.io/github/forks/yourusername/landing-page-builder?style=social)
-![GitHub issues](https://img.shields.io/github/issues/yourusername/landing-page-builder)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/yourusername/landing-page-builder)
-
----
-
-**Built with ❤️ by [Ifeanyi](https://github.com/yourusername)**
 
 **Happy Building! 🚀**
